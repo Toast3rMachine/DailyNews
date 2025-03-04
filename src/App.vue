@@ -1,30 +1,39 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+  import { ref } from 'vue';
+
+  const rssFlowLink = ref('')
+  const rssFlowTitle = ref('')
+  const rssFlows:any = ref([])
+
+  const addRssFlow = () => {
+    console.log(rssFlowLink.value)
+    console.log(rssFlowTitle.value)
+    rssFlows.value.push({
+      link: rssFlowLink.value, 
+      title: rssFlowTitle.value,
+      date: Date.now()
+    })
+    console.log(rssFlows.value)
+  }
 </script>
 
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
-</template>
+  <form action="" @submit.prevent="addRssFlow">
+    <fieldset role="group">
+      <input v-model="rssFlowLink" type="text" placeholder="Lien du flux rss">
+      <input v-model="rssFlowTitle" type="text" placeholder="Titre du flux rss">
+      <button>Enregistrer un flux rss</button>
+    </fieldset>
+  </form>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
+  <div v-if="rssFlows.length == 0">
+    Vous n'avez pas encore enregistré de flux rss.
+  </div>
+  <div v-else>
+    <ul>
+      <li v-for="rssFlow in rssFlows" :key="rssFlow.date">
+        {{ rssFlow.title }}
+      </li>
+    </ul>
+  </div>
+</template>
