@@ -5,16 +5,31 @@
   const rssFlowTitle = ref('')
   const rssFlows:any = ref([])
 
+  let localStorageIsEmpty = localStorage.length == 0 ?  true : false
+  const localItems = JSON.parse(localStorage.getItem("Flux Rss") || '{}')
+
+  if (!localStorageIsEmpty){
+    for (let index in localItems){
+      rssFlows.value.push({
+        link: localItems[index].link,
+        title: localItems[index].title,
+        date: localItems[index].date
+      })
+    }
+  }
+
   const addRssFlow = () => {
-    console.log(rssFlowLink.value)
-    console.log(rssFlowTitle.value)
     rssFlows.value.push({
       link: rssFlowLink.value, 
       title: rssFlowTitle.value,
       date: Date.now()
     })
-    console.log(rssFlows.value)
+    localStorage.setItem("Flux Rss", JSON.stringify(rssFlows.value))
+    localStorageIsEmpty = localStorage.length == 0 ?  true : false
+    rssFlowLink.value = ''
+    rssFlowTitle.value = ''
   }
+
 </script>
 
 <template>
@@ -22,7 +37,10 @@
     <fieldset role="group">
       <input v-model="rssFlowLink" type="text" placeholder="Lien du flux rss">
       <input v-model="rssFlowTitle" type="text" placeholder="Titre du flux rss">
-      <button>Enregistrer un flux rss</button>
+      <button :disabled="rssFlowLink.length == 0 || rssFlowTitle.length == 0">Enregistrer un flux rss</button>
+      <p v-if="rssFlowLink.length == 0 || rssFlowTitle.length == 0">
+        Veuillez renseigner les deux champs du formulaire pour ajouter le flux rss de votre choix.
+      </p>
     </fieldset>
   </form>
 
