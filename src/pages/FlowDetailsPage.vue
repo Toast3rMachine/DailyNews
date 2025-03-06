@@ -3,9 +3,10 @@ import { ref } from 'vue'
 
     const rssFlowLink = ref('')
     const rssFlowTitle = ref('')
-    const newRssFlow:any = ref([])
     const newsLimit = ref('Tout')
+    const newRssFlow:any = ref([])
     const newsList:any = ref([])
+    const newsPreference:any = ref([])
 
     const props = defineProps({
         id: String
@@ -31,6 +32,18 @@ import { ref } from 'vue'
         localStorage.setItem("Flux Rss", JSON.stringify(localItems))
         rssFlowLink.value = ''
         rssFlowTitle.value = ''
+    }
+
+    const addToPreference = (id:any) => {
+        const news = document.getElementById('news'+id)
+        newsPreference.value.push({
+            title: news?.querySelector('h1')?.textContent,
+            link: news?.querySelector('a')?.textContent,
+            description: news?.querySelector('p.desc')?.textContent,
+            pubDate : news?.querySelector('p.pubDate')?.textContent,
+            img: news?.querySelector('img')?.textContent ? news?.querySelector('img')?.textContent : '' 
+        })
+        localStorage.setItem("Preferences", JSON.stringify(newsPreference.value))
     }
 
     const updateData = () => {
@@ -76,8 +89,6 @@ import { ref } from 'vue'
         }
     }
 
-    // document.addEventListener('DOMContentLoaded', fetchRSSFeed);
-
     const showNews = async () => {
         newsList.value = (await fetchRSSFeed()).slice(0, newsLimit.value === "Tout" ? newsList.value.lenght : parseInt(newsLimit.value, 10))
         console.log(newsList.value)
@@ -107,13 +118,14 @@ import { ref } from 'vue'
         <option value="100">100</option>
         <option value="Tout">Tout</option>
     </select>
-    <div v-for="news in newsList">
-        <div>
+    <div v-for="(news, index) in newsList" :key="news.title">
+        <div :id="'news'+index.toString()">
             <h1>{{ news.title }}</h1>
             <a :href="news.link">Lire l'article</a>
             <img :src="news.img">
-            <p>{{ news.description }}</p>
-            <p>{{ news.pubDate }}</p>
+            <p class="desc">{{ news.description }}</p>
+            <p class="pubDate">{{ news.pubDate }}</p>
+            <button @click="addToPreference(index.toString())">Ajouter à vos préférences</button>
         </div>
     </div>
 </template>
