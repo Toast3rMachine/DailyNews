@@ -40,7 +40,52 @@ import { ref } from 'vue'
         })
     }
 
+    const fecthRSSFeed = async () => {
+        const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/'
+        const fetchUrl = rssFlow.link
+        const url = CORS_PROXY+fetchUrl
+
+        try {
+            // console.log('Fetching URL:', url); // Debugging 1: Log the request URL
+            const response = await fetch(url);
+            const data = await response.text();
+            
+            // console.log('Data fetched:', data); // Debugging 2: Log the raw data
+            
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(data, "application/xml");
+
+            // console.log('Parsed XML:', xmlDoc); // Debugging 3: Log the parsed XML
+
+            const items = xmlDoc.querySelectorAll("item");
+            const container = document.getElementById('container');
+            container!.innerHTML = '';
+
+            items.forEach(item => {
+                const title = item.querySelector("title")!.textContent;
+                const link = item.querySelector("link")!.textContent;
+                const description = item.querySelector("description")!.textContent;
+                const pubDate = item.querySelector("pubDate") ? item.querySelector("pubDate")!.textContent : '';
+
+                const newsItem = document.createElement('div');
+                newsItem.classList.add('news-item');
+                newsItem.innerHTML = `
+                    <h3><a href="${link}" target="_blank">${title}</a></h3>
+                    <p>${description}</p>
+                    <small>${pubDate}</small>
+                `;
+
+                container!.appendChild(newsItem);
+            });
+        } catch (error) {
+            console.error('Error fetching the RSS feed:', error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', fecthRSSFeed);
+
 </script>
+
 
 <template>
     <h1>Ici Details d'un flux rss en particulier : {{ props.id }}</h1>
@@ -57,4 +102,7 @@ import { ref } from 'vue'
             </p>
         </fieldset>
     </form>
+    <div id="container">
+
+    </div>
 </template>
