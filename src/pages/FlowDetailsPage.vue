@@ -4,6 +4,8 @@ import { ref } from 'vue'
     const rssFlowLink = ref('')
     const rssFlowTitle = ref('')
     const newRssFlow:any = ref([])
+    const newsLimit = ref('Tout')
+    const newsList:any = ref([])
 
     const props = defineProps({
         id: String
@@ -40,14 +42,16 @@ import { ref } from 'vue'
         })
     }
 
-    const fecthRSSFeed = async () => {
-        const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/'
+    const fetchRSSFeed = async (): Promise<any> => {
         const fetchUrl = rssFlow.link
-        const url = CORS_PROXY+fetchUrl
+
+        // Proxy à utiliser dans le cas d'erreur CORS. A activer en ajoutant en allant sur https://cors-anywhere.herokuapp.com/corsdemo
+        // const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/'
+        // const url = CORS_PROXY+fetchUrl
 
         try {
             // console.log('Fetching URL:', url); // Debugging 1: Log the request URL
-            const response = await fetch(url);
+            const response = await fetch(fetchUrl); // Changez fetchUrl par url si le proxy est utilisé.
             const data = await response.text();
             
             // console.log('Data fetched:', data); // Debugging 2: Log the raw data
@@ -57,32 +61,27 @@ import { ref } from 'vue'
 
             // console.log('Parsed XML:', xmlDoc); // Debugging 3: Log the parsed XML
 
-            const items = xmlDoc.querySelectorAll("item");
-            const container = document.getElementById('container');
-            container!.innerHTML = '';
-
-            items.forEach(item => {
-                const title = item.querySelector("title")!.textContent;
-                const link = item.querySelector("link")!.textContent;
-                const description = item.querySelector("description")!.textContent;
+            return Array.from(xmlDoc.querySelectorAll("item")).map(item => {
+                const description = item.querySelector("description")?.textContent || '';
                 const pubDate = item.querySelector("pubDate") ? item.querySelector("pubDate")!.textContent : '';
+                const title = item.querySelector("title")?.textContent || '';
+                const link = item.querySelector("link")?.textContent || '';
+                const img = item.querySelector("image")?.querySelector("url") || ''; // Image doesn't work
 
-                const newsItem = document.createElement('div');
-                newsItem.classList.add('news-item');
-                newsItem.innerHTML = `
-                    <h3><a href="${link}" target="_blank">${title}</a></h3>
-                    <p>${description}</p>
-                    <small>${pubDate}</small>
-                `;
-
-                container!.appendChild(newsItem);
-            });
+                return { title, link, description, pubDate, img };
+            })
         } catch (error) {
             console.error('Error fetching the RSS feed:', error);
+            throw error
         }
     }
 
-    document.addEventListener('DOMContentLoaded', fecthRSSFeed);
+    // document.addEventListener('DOMContentLoaded', fetchRSSFeed);
+
+    const showNews = async () => {
+        newsList.value = (await fetchRSSFeed()).slice(0, newsLimit.value === "Tout" ? newsList.value.lenght : parseInt(newsLimit.value, 10))
+        console.log(newsList.value)
+    }
 
 </script>
 
@@ -102,7 +101,19 @@ import { ref } from 'vue'
             </p>
         </fieldset>
     </form>
-    <div id="container">
-
+    <select v-model="newsLimit" @change="showNews">
+        <option value="10" selected>10</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+        <option value="Tout">Tout</option>
+    </select>
+    <div v-for="news in newsList">
+        <div>
+            <h1>{{ news.title }}</h1>
+            <a :href="news.link">Lire l'article</a>
+            <img :src="news.img">
+            <p>{{ news.description }}</p>
+            <p>{{ news.pubDate }}</p>
+        </div>
     </div>
 </template>
