@@ -30,6 +30,26 @@
         rssFlowTitle.value = ''
     }
 
+    const deleteRssFeed = (id:any) => {
+        const preferences = JSON.parse(localStorage.getItem("Preferences") || '{}')
+        const rssFlowCopy:any = []
+        const prefCopy:any = []
+        for (let index=0; index<rssFlows.value.length; index++){
+            if (rssFlows.value[index].date != id){
+                rssFlowCopy.push(rssFlows.value[index])
+            }
+        }
+        for (let prefIndex=0; prefIndex<preferences.length; prefIndex++) {
+            if (preferences[prefIndex].feedId != id){
+                prefCopy.push(preferences[prefIndex])
+            }
+        }
+        rssFlows.value = rssFlowCopy
+        localStorage.setItem("Flux Rss", JSON.stringify(rssFlows.value))
+        localStorage.setItem("Preferences", JSON.stringify(prefCopy))
+        console.log("Flux RSS supprimé avec succès")
+    }
+
 </script>
 
 <template>
@@ -53,6 +73,7 @@
                 <RouterLink :to="{name: 'flow.details', params: {id: rssFlow.date}}">
                     {{ rssFlow.title }}
                 </RouterLink>
+                <button @click="deleteRssFeed(rssFlow.date)">Supprimer ce flux</button>
             </li>
         </ul>
     </div>

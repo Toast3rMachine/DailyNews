@@ -8,6 +8,7 @@
         let localItems = JSON.parse(localStorage.getItem("Preferences") || '{}')
         for (let i=0; i<localItems.length; i++){
             newsList.value.push({
+                feedId: localItems[i].feedId,
                 title: localItems[i].title,
                 link: localItems[i].link,
                 description: localItems[i].description,
