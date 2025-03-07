@@ -48,6 +48,7 @@ import { onMounted, ref } from 'vue'
 
         if (!inPreference){
             newsPreference.value.push({
+                feedId: props.id,
                 title: news?.querySelector('h1')?.textContent,
                 link: news?.querySelector('a')?.getAttribute('href'),
                 description: news?.querySelector('p.desc')?.textContent,
@@ -110,6 +111,7 @@ import { onMounted, ref } from 'vue'
         let localItems = JSON.parse(localStorage.getItem("Preferences") || '{}')
         for (let i=0; i<localItems.length; i++){
             newsPreference.value.push({
+                feedId: localItems[i].feedId,
                 title: localItems[i].title,
                 link: localItems[i].link,
                 description: localItems[i].description,
