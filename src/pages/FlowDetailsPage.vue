@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
     const rssFlowLink = ref('')
     const rssFlowTitle = ref('')
-    const newRssFlow:any = ref([])
     const newsLimit = ref('Tout')
+    const newRssFlow:any = ref([])
     const newsList:any = ref([])
+    const newsPreference:any = ref([])
 
     const props = defineProps({
         id: String
@@ -31,6 +32,31 @@ import { ref } from 'vue'
         localStorage.setItem("Flux Rss", JSON.stringify(localItems))
         rssFlowLink.value = ''
         rssFlowTitle.value = ''
+    }
+
+    const addToPreference = (id:String) => {
+        const news = document.getElementById('news'+id)
+        let inPreference = false
+
+        for (let index=0; index<newsPreference.value.length; index++){
+            if (newsPreference.value[index].title == news?.querySelector('h1')?.textContent){
+                inPreference = true
+                console.log("Cette news est déjà dans vos préférences")
+                break
+            }
+        }
+
+        if (!inPreference){
+            newsPreference.value.push({
+                title: news?.querySelector('h1')?.textContent,
+                link: news?.querySelector('a')?.getAttribute('href'),
+                description: news?.querySelector('p.desc')?.textContent,
+                pubDate : news?.querySelector('p.pubDate')?.textContent,
+                img: news?.querySelector('img')?.textContent ? news?.querySelector('img')?.textContent : '' 
+            })
+            localStorage.setItem("Preferences", JSON.stringify(newsPreference.value))
+            console.log("News ajoutée à vos préférences")
+        }
     }
 
     const updateData = () => {
@@ -76,12 +102,27 @@ import { ref } from 'vue'
         }
     }
 
-    // document.addEventListener('DOMContentLoaded', fetchRSSFeed);
-
     const showNews = async () => {
         newsList.value = (await fetchRSSFeed()).slice(0, newsLimit.value === "Tout" ? newsList.value.lenght : parseInt(newsLimit.value, 10))
-        console.log(newsList.value)
     }
+
+    const getNewsPreference = () => {
+        let localItems = JSON.parse(localStorage.getItem("Preferences") || '{}')
+        for (let i=0; i<localItems.length; i++){
+            newsPreference.value.push({
+                title: localItems[i].title,
+                link: localItems[i].link,
+                description: localItems[i].description,
+                pubDate : localItems[i].pubDate,
+                img: localItems[i].img != '' ? localItems[i].img : '' 
+            })
+        }
+    }
+
+    onMounted(() => {
+        showNews()
+        getNewsPreference()
+    })
 
 </script>
 
@@ -102,18 +143,19 @@ import { ref } from 'vue'
         </fieldset>
     </form>
     <select v-model="newsLimit" @change="showNews">
-        <option value="10" selected>10</option>
+        <option value="10">10</option>
         <option value="50">50</option>
         <option value="100">100</option>
         <option value="Tout">Tout</option>
     </select>
-    <div v-for="news in newsList">
-        <div>
+    <div v-for="(news, index) in newsList" :key="news.title">
+        <div :id="'news'+index.toString()">
             <h1>{{ news.title }}</h1>
             <a :href="news.link">Lire l'article</a>
             <img :src="news.img">
-            <p>{{ news.description }}</p>
-            <p>{{ news.pubDate }}</p>
+            <p class="desc">{{ news.description }}</p>
+            <p class="pubDate">{{ news.pubDate }}</p>
+            <button @click="addToPreference(index.toString())">Ajouter à vos préférences</button>
         </div>
     </div>
 </template>
