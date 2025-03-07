@@ -5,7 +5,7 @@ import NotFoundPage from "./pages/NotFoundPage.vue";
 import PreferencePage from "./pages/PreferencePage.vue";
 
 export const routes = [
-    {path: '/', component: App, name: 'home'},
+    {path: '/', redirect:'/list',component: App, name: 'home'},
     {path: '/list', component: FlowListPage, name: 'flow.list'},
     {
         path: '/details/:id(\\d+)', 
