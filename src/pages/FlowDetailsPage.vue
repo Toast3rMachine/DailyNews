@@ -34,7 +34,7 @@ import { onMounted, ref } from 'vue'
         rssFlowTitle.value = ''
     }
 
-    const addToPreference = (id:any) => {
+    const addToPreference = (id:String) => {
         const news = document.getElementById('news'+id)
         let inPreference = false
 
