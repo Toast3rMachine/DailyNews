@@ -110,34 +110,45 @@
 
 
 <template>
-    <h1>Ici Details d'un flux rss en particulier : {{ props.id }}</h1>
-    <p>Nom du flux rss : {{ rssFeed.title }}</p>
-    <p>Lien actuel du flux rss : {{ rssFeed.link }}</p>
-    <form action="" @submit.prevent="updateRssFeed(); updateData()">
-        <fieldset>
-            <h2>Modification du flux rss</h2>
-            <input v-model="rssFeedLink" type="text" placeholder="Nouveau Lien du Flux rss">
-            <input v-model="rssFeedTitle" type="text" placeholder="Nouveau Nom du Flux rss">
-            <button :disabled="rssFeedLink.length == 0 || rssFeedTitle.length == 0">Enregistrer un flux rss</button>
-            <p v-if="rssFeedLink.length == 0 || rssFeedTitle.length == 0">
-                Veuillez renseigner les deux champs du formulaire pour ajouter le flux rss de votre choix.
-            </p>
-        </fieldset>
-    </form>
-    <select v-model="newsLimit" @change="showNews">
-        <option value="10">10</option>
-        <option value="50">50</option>
-        <option value="100">100</option>
-        <option value="Tout">Tout</option>
-    </select>
-    <div v-for="(news, index) in newsList" :key="news.title">
-        <div :id="'news'+index.toString()">
-            <h1>{{ news.title }}</h1>
-            <a :href="news.link">Lire l'article</a>
-            <img :src="news.img">
-            <p class="desc">{{ news.description }}</p>
-            <p class="pubDate">{{ news.pubDate }}</p>
-            <button @click="addToPreference(index.toString())">Ajouter à vos préférences</button>
+    <div class="bg-slate-500 min-h-screen h-full text-2xl p-4 space-y-4">
+        <div class="flex space-x-4">
+            <div class="flex flex-col h-fit min-w-1/2 items-center space-y-4 text-white bg-slate-700 p-5 rounded-xl shadow-lg shadow-slate-700">
+                <h1>Voici les news du flux {{ rssFeed.title }}</h1>
+                <p>Lien actuel du flux rss : {{ rssFeed.link }}</p>
+                <p>Id du flux rss : {{ props.id }}</p>
+            </div>
+            <form action="" @submit.prevent="updateRssFeed(); updateData()" class="min-w-1/2">
+                <fieldset role="group" class="flex flex-col items-center space-y-4 bg-slate-700 p-5 rounded-xl shadow-lg shadow-slate-700">
+                    <h2 class="text-white">Modification du flux rss</h2>
+                    <input v-model="rssFeedLink" type="text" placeholder="Nouveau Lien du Flux rss..." class="bg-white rounded-xl px-2 py-1 w-full text-rosewood">
+                    <input v-model="rssFeedTitle" type="text" placeholder="Nouveau Nom du Flux rss..." class="bg-white rounded-xl px-2 py-1 w-full text-rosewood">
+                    <button 
+                        :disabled="rssFeedLink.length == 0 || rssFeedTitle.length == 0"
+                        class="bg-rosewood w-fit p-2 rounded-xl text-white cursor-pointer hover:bg-red-900"
+                        >
+                        Enregistrer un flux rss
+                    </button>
+                </fieldset>
+                <p v-if="rssFeedLink.length == 0 || rssFeedTitle.length == 0" class="mt-4 text-rosewood">
+                    Veuillez renseigner les deux champs du formulaire pour ajouter le flux rss de votre choix.
+                </p>
+            </form>
+        </div>
+        <select v-model="newsLimit" @change="showNews" class="bg-slate-700 text-white py-1 px-2 rounded-xl shadow-lg shadow-slate-700 cursor-pointer">
+            <option value="10">10</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="Tout">Tout</option>
+        </select>
+        <div v-for="(news, index) in newsList" :key="news.title">
+            <div :id="'news'+index.toString()" class="text-white bg-slate-700 py-2 px-4 space-y-2 rounded-xl shadow-lg shadow-slate-700">
+                <h1>{{ news.title }}</h1>
+                <img :src="news.img">
+                <p class="desc">{{ news.description }}</p>
+                <p class="pubDate text-lg text-slate-300">{{ news.pubDate }}</p>
+                <a :href="news.link" class="bg-rosewood w-fit p-2 rounded-xl text-white cursor-pointer hover:bg-red-900 mr-4">Lire l'article</a>
+                <button @click="addToPreference(index.toString())" class="bg-rosewood w-fit p-2 rounded-xl text-white cursor-pointer hover:bg-red-900">Ajouter à vos préférences</button>
+            </div>
         </div>
     </div>
 </template>

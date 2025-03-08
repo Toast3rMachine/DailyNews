@@ -35,17 +35,19 @@
 </script>
 
 <template>
-    <h1>Vos préférences</h1>
-    <input type="text" id="search" v-model="newsSearch" placeholder="Rechercher...">
-    <button @click="filteredNews">Filtrer</button>
-    <div v-for="(news, index) in newsPreference" :key="news.title">
-        <div :id="'news'+index.toString()" class="news">
-            <h1 class="title">{{ news.title }}</h1>
-            <a :href="news.link">Lire l'article</a>
-            <img :src="news.img">
-            <p class="desc">{{ news.description }}</p>
-            <p class="pubDate">{{ news.pubDate }}</p>
-            <button @click="removeFromPreference(index)">Supprimer de vos préférences</button>
+    <div class="bg-slate-500 min-h-screen h-full text-2xl p-4 space-y-4">
+        <h1 class="text-4xl">Vos préférences</h1>
+        <input type="text" id="search" v-model="newsSearch" placeholder="Rechercher..." class="bg-white rounded-xl px-2 py-1 mr-2 w-fit text-rosewood">
+        <button @click="filteredNews" class="bg-rosewood w-fit p-2 rounded-xl text-white cursor-pointer hover:bg-red-900 mr-4">Filtrer</button>
+        <div v-for="(news, index) in newsPreference" :key="news.title">
+            <div :id="'news'+index.toString()" class="news text-white bg-slate-700 py-2 px-4 space-y-2 rounded-xl shadow-lg shadow-slate-700">
+                <h1 class="title">{{ news.title }}</h1>
+                <img :src="news.img">
+                <p class="desc">{{ news.description }}</p>
+                <p class="pubDate text-lg text-slate-300">{{ news.pubDate }}</p>
+                <a :href="news.link" class="bg-rosewood w-fit p-2 rounded-xl text-white cursor-pointer hover:bg-red-900 mr-4">Lire l'article</a>
+                <button @click="removeFromPreference(index)" class="bg-rosewood w-fit p-2 rounded-xl text-white cursor-pointer hover:bg-red-900">Supprimer de vos préférences</button>
+            </div>
         </div>
     </div>
 </template>
