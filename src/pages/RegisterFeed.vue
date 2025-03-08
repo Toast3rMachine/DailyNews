@@ -1,34 +1,26 @@
 <script setup lang="ts">
-    import { ref } from 'vue'
+    import { onMounted, ref } from 'vue'
+    import { getValueFromLocalStorage } from '../lib/utils'
 
     const rssFlowLink = ref('')
     const rssFlowTitle = ref('')
     const rssFlows:any = ref([])
 
-    let localStorageIsEmpty = localStorage.length == 0 ? true : false
-    const localItems = JSON.parse(localStorage.getItem("Flux Rss") || '{}')
-
-    if (!localStorageIsEmpty){
-        for (let index in localItems){
+    const addRssFlow = () => {
         rssFlows.value.push({
-            link: localItems[index].link,
-            title: localItems[index].title,
-            date: localItems[index].date
+            link: rssFlowLink.value, 
+            title: rssFlowTitle.value,
+            date: Date.now()
         })
-        }
+        localStorage.setItem("Flux Rss", JSON.stringify(rssFlows.value))
+        rssFlowLink.value = ''
+        rssFlowTitle.value = ''
     }
 
-    const addRssFlow = () => {
-            rssFlows.value.push({
-                link: rssFlowLink.value, 
-                title: rssFlowTitle.value,
-                date: Date.now()
-            })
-            localStorage.setItem("Flux Rss", JSON.stringify(rssFlows.value))
-            localStorageIsEmpty = localStorage.length == 0 ?  true : false
-            rssFlowLink.value = ''
-            rssFlowTitle.value = ''
-        }
+    onMounted(() => {
+        rssFlows.value = getValueFromLocalStorage()
+    })
+
 </script>
 
 <template>

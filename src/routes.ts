@@ -1,16 +1,16 @@
 import App from "./App.vue";
-import FlowDetailsPage from "./pages/FlowDetailsPage.vue";
-import FlowListPage from "./pages/FlowListPage.vue";
+import FeedDetailsPage from "./pages/FeedDetailsPage.vue";
+import FeedListPage from "./pages/FeedListPage.vue";
 import NotFoundPage from "./pages/NotFoundPage.vue";
 import PreferencePage from "./pages/PreferencePage.vue";
 import RegisterFeed from "./pages/RegisterFeed.vue";
 
 export const routes = [
     {path: '/', redirect:'/list',component: App, name: 'home'},
-    {path: '/list', component: FlowListPage, name: 'flow.list'},
+    {path: '/list', component: FeedListPage, name: 'flow.list'},
     {
         path: '/details/:id(\\d+)', 
-        component: FlowDetailsPage, 
+        component: FeedDetailsPage, 
         props:true,
         name: 'flow.details'
     },

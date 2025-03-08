@@ -1,20 +1,8 @@
 <script setup lang="ts">
-    import { ref } from 'vue';
+    import { onMounted, ref } from 'vue';
+    import { getValueFromLocalStorage } from '../lib/utils';
 
     const rssFlows:any = ref([])
-
-    let localStorageIsEmpty = localStorage.length == 0 ? true : false
-    const localItems = JSON.parse(localStorage.getItem("Flux Rss") || '{}')
-
-    if (!localStorageIsEmpty){
-        for (let index in localItems){
-        rssFlows.value.push({
-            link: localItems[index].link,
-            title: localItems[index].title,
-            date: localItems[index].date
-        })
-        }
-    }
 
     const deleteRssFeed = (id:any) => {
         const preferences = JSON.parse(localStorage.getItem("Preferences") || '{}')
@@ -35,6 +23,10 @@
         localStorage.setItem("Preferences", JSON.stringify(prefCopy))
         console.log("Flux RSS supprimé avec succès")
     }
+
+    onMounted(() => {
+        rssFlows.value = getValueFromLocalStorage()
+    })
 
 </script>
 
