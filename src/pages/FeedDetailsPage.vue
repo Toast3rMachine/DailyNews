@@ -1,10 +1,15 @@
 <script setup lang="ts">
     import { onMounted, ref } from 'vue'
     import { getFeedByIndex, getIndex, getLocalItems, getNewsPreference } from '../lib/utils'
+    import Notification from '../components/Notification.vue'
 
     const rssFeedLink = ref('')
     const rssFeedTitle = ref('')
     const newsLimit = ref('Tout')
+    const notif = ref(false)
+    const notInPreference = ref(true)
+    const inPreference = ref(false)
+    const feedModification = ref(false)
     const newRssFeed:any = ref([])
     const newsList:any = ref([])
     const newsPreference:any = ref([])
@@ -17,17 +22,18 @@
 
     const addToPreference = (id:String) => {
         const news = document.getElementById('news'+id)
-        let inPreference = false
+        inPreference.value = false
 
         for (let index=0; index<newsPreference.value.length; index++){
             if (newsPreference.value[index].title == news?.querySelector('h1')?.textContent){
-                inPreference = true
-                console.log("Cette news est déjà dans vos préférences")
+                inPreference.value = true
+                notInPreference.value = false
+                showNotif()
                 break
             }
         }
 
-        if (!inPreference){
+        if (!inPreference.value){
             newsPreference.value.push({
                 feedId: props.id,
                 title: news?.querySelector('h1')?.textContent,
@@ -37,7 +43,8 @@
                 img: news?.querySelector('img')?.textContent ? news?.querySelector('img')?.textContent : '' 
             })
             localStorage.setItem("Preferences", JSON.stringify(newsPreference.value))
-            console.log("News ajoutée à vos préférences")
+            notInPreference.value = true
+            showNotif()
         }
     }
 
@@ -52,6 +59,8 @@
         localStorage.setItem("Flux Rss", JSON.stringify(localItems))
         rssFeedLink.value = ''
         rssFeedTitle.value = ''
+        feedModification.value = true
+        showNotif()
     }
 
     const updateData = () => {
@@ -97,6 +106,12 @@
         }
     }
 
+    const showNotif = () => {
+        notif.value = true
+        setTimeout(() => notif.value = false, 1500)
+        setTimeout(() => feedModification.value = false, 1500)
+    }
+
     const showNews = async () => {
         newsList.value = (await fetchRSSFeed()).slice(0, newsLimit.value === "Tout" ? newsList.value.lenght : parseInt(newsLimit.value, 10))
     }
@@ -117,6 +132,15 @@
                 <p>Lien actuel du flux rss : {{ rssFeed.link }}</p>
                 <p>Id du flux rss : {{ props.id }}</p>
             </div>
+            <transition name="notif">
+                <Notification v-if="notif && notInPreference && !feedModification" text="Flux ajouté à vos préférences"/>
+            </transition>
+            <transition name="notif">
+                <Notification v-if="notif && inPreference && !feedModification" text="Flux présent dans vos préférences"/>
+            </transition>
+            <transition name="notif">
+                <Notification v-if="notif && feedModification" text="Flux modifié"/>
+            </transition>
             <form action="" @submit.prevent="updateRssFeed(); updateData()" class="min-w-1/2">
                 <fieldset role="group" class="flex flex-col items-center space-y-4 bg-slate-700 p-5 rounded-xl shadow-lg shadow-slate-700">
                     <h2 class="text-white">Modification du flux rss</h2>
