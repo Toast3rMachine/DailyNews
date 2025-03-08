@@ -3,6 +3,7 @@ import FlowDetailsPage from "./pages/FlowDetailsPage.vue";
 import FlowListPage from "./pages/FlowListPage.vue";
 import NotFoundPage from "./pages/NotFoundPage.vue";
 import PreferencePage from "./pages/PreferencePage.vue";
+import RegisterFeed from "./pages/RegisterFeed.vue";
 
 export const routes = [
     {path: '/', redirect:'/list',component: App, name: 'home'},
@@ -13,6 +14,7 @@ export const routes = [
         props:true,
         name: 'flow.details'
     },
+    {path: '/registerFeed', component: RegisterFeed, name: 'registerFeed'},
     {path: '/preference', component: PreferencePage, name: 'preference'},
     {path: '/:pathMatch(.*)*', component: NotFoundPage}
 ]

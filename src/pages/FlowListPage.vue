@@ -1,8 +1,6 @@
 <script setup lang="ts">
     import { ref } from 'vue';
 
-    const rssFlowLink = ref('')
-    const rssFlowTitle = ref('')
     const rssFlows:any = ref([])
 
     let localStorageIsEmpty = localStorage.length == 0 ? true : false
@@ -16,18 +14,6 @@
             date: localItems[index].date
         })
         }
-    }
-
-    const addRssFlow = () => {
-        rssFlows.value.push({
-            link: rssFlowLink.value, 
-            title: rssFlowTitle.value,
-            date: Date.now()
-        })
-        localStorage.setItem("Flux Rss", JSON.stringify(rssFlows.value))
-        localStorageIsEmpty = localStorage.length == 0 ?  true : false
-        rssFlowLink.value = ''
-        rssFlowTitle.value = ''
     }
 
     const deleteRssFeed = (id:any) => {
@@ -53,19 +39,12 @@
 </script>
 
 <template>
-    <form action="" @submit.prevent="addRssFlow">
-        <fieldset role="group">
-            <input v-model="rssFlowLink" type="text" placeholder="Lien du flux rss">
-            <input v-model="rssFlowTitle" type="text" placeholder="Titre du flux rss">
-            <button :disabled="rssFlowLink.length == 0 || rssFlowTitle.length == 0">Enregistrer un flux rss</button>
-            <p v-if="rssFlowLink.length == 0 || rssFlowTitle.length == 0">
-                Veuillez renseigner les deux champs du formulaire pour ajouter le flux rss de votre choix.
-            </p>
-        </fieldset>
-    </form>
-
     <div v-if="rssFlows.length == 0">
         Vous n'avez pas encore enregistré de flux rss.
+        Pour enregistrer un flux, rendez-vous sur cette page :
+        <RouterLink :to="{name:'registerFeed'}">
+            Enregistrer un flux RSS.
+        </RouterLink>
     </div>
     <div v-else>
         <ul>

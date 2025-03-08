@@ -67,6 +67,7 @@ import { onMounted, ref } from 'vue'
             title: localItems[index].title,
             id: props.id
         })
+        showNews()
     }
 
     const fetchRSSFeed = async (): Promise<any> => {
